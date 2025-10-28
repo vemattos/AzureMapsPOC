@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Azure Maps POC</title>
+  <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css" />
+  <link rel="stylesheet" href="style.css">
+  <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Azure Maps POC</h1>
+  </header>
+
+  <main>
+    <section id="controls">
+      <div class="card">
+        <h2>Buscar endereço</h2>
+        <div class="input-group">
+          <input type="text" id="searchBox" placeholder="Digite um endereço">
+          <button onclick="searchAddress()">Buscar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Traçar rota</h2>
+        <div class="input-group">
+          <input type="text" id="origin" placeholder="Origem">
+          <input type="text" id="destination" placeholder="Destino">
+          <button onclick="tracarRota()">Traçar rota</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="map-container">
+      <div id="map"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Azure Maps POC</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
