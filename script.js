@@ -52,51 +52,73 @@ async function searchAddress() {
 async function tracarRota() {
   const origem = document.getElementById('origin').value;
   const destino = document.getElementById('destination').value;
+  const routeInfo = document.getElementById('route-info');
+  const distanceElem = document.getElementById('distance');
+  const durationElem = document.getElementById('duration');
+
   if (!origem || !destino) return alert("Digite origem e destino!");
 
-  const origemRes = await fetch(`https://atlas.microsoft.com/search/address/json?api-version=1.0&subscription-key=${subscriptionKey}&query=${encodeURIComponent(origem)}`);
-  const origemData = await origemRes.json();
-  if (!origemData.results.length) return alert("Origem não encontrada!");
-  const origemPos = origemData.results[0].position;
+  routeInfo.classList.add('hidden');
 
-  const destinoRes = await fetch(`https://atlas.microsoft.com/search/address/json?api-version=1.0&subscription-key=${subscriptionKey}&query=${encodeURIComponent(destino)}`);
-  const destinoData = await destinoRes.json();
-  if (!destinoData.results.length) return alert("Destino não encontrado!");
-  const destinoPos = destinoData.results[0].position;
+  try {
+    const origemRes = await fetch(`https://atlas.microsoft.com/search/address/json?api-version=1.0&subscription-key=${subscriptionKey}&query=${encodeURIComponent(origem)}`);
+    const origemData = await origemRes.json();
+    if (!origemData.results.length) return alert("Origem não encontrada!");
+    const origemPos = origemData.results[0].position;
 
-  const rotaRes = await fetch(`https://atlas.microsoft.com/route/directions/json?subscription-key=${subscriptionKey}&api-version=1.0&query=${origemPos.lat},${origemPos.lon}:${destinoPos.lat},${destinoPos.lon}`);
-  const rotaData = await rotaRes.json();
+    const destinoRes = await fetch(`https://atlas.microsoft.com/search/address/json?api-version=1.0&subscription-key=${subscriptionKey}&query=${encodeURIComponent(destino)}`);
+    const destinoData = await destinoRes.json();
+    if (!destinoData.results.length) return alert("Destino não encontrada!");
+    const destinoPos = destinoData.results[0].position;
 
-  if (rotaData.routes && rotaData.routes.length > 0) {
-    const coordinates = rotaData.routes[0].legs[0].points.map(p => [p.longitude, p.latitude]);
-    routeDatasource.clear();
-    datasource.clear();
+    const rotaRes = await fetch(`https://atlas.microsoft.com/route/directions/json?subscription-key=${subscriptionKey}&api-version=1.0&query=${origemPos.lat},${origemPos.lon}:${destinoPos.lat},${destinoPos.lon}`);
+    const rotaData = await rotaRes.json();
 
-    routeDatasource.add(new atlas.data.Feature(new atlas.data.LineString(coordinates)));
-    datasource.add([
-      new atlas.data.Feature(new atlas.data.Point([origemPos.lon, origemPos.lat])),
-      new atlas.data.Feature(new atlas.data.Point([destinoPos.lon, destinoPos.lat]))
-    ]);
+    if (rotaData.routes && rotaData.routes.length > 0) {
+      const rota = rotaData.routes[0];
+      const coordinates = rota.legs[0].points.map(p => [p.longitude, p.latitude]);
 
-    const midLat = (origemPos.lat + destinoPos.lat) / 2;
-    const midLon = (origemPos.lon + destinoPos.lon) / 2;
+      routeDatasource.clear();
+      datasource.clear();
 
-    const dist = Math.sqrt(Math.pow(origemPos.lat - destinoPos.lat, 2) + Math.pow(origemPos.lon - destinoPos.lon, 2));
-    let zoom = 10;
-    if (dist < 0.2) zoom = 13;
-    else if (dist < 1) zoom = 11;
-    else if (dist < 5) zoom = 9;
-    else zoom = 7;
+      routeDatasource.add(new atlas.data.Feature(new atlas.data.LineString(coordinates)));
+      datasource.add([
+        new atlas.data.Feature(new atlas.data.Point([origemPos.lon, origemPos.lat])),
+        new atlas.data.Feature(new atlas.data.Point([destinoPos.lon, destinoPos.lat]))
+      ]);
 
-    map.setCamera({
-      center: [midLon, midLat],
-      zoom: zoom,
-      type: 'ease',
-      duration: 1500
-    });
-  } else {
-    alert("Não foi possível traçar a rota.");
+      const midLat = (origemPos.lat + destinoPos.lat) / 2;
+      const midLon = (origemPos.lon + destinoPos.lon) / 2;
+
+      const dist = Math.sqrt(Math.pow(origemPos.lat - destinoPos.lat, 2) + Math.pow(origemPos.lon - destinoPos.lon, 2));
+      let zoom = 10;
+      if (dist < 0.2) zoom = 13;
+      else if (dist < 1) zoom = 11;
+      else if (dist < 5) zoom = 9;
+      else zoom = 7;
+
+      map.setCamera({
+        center: [midLon, midLat],
+        zoom: zoom,
+        type: 'ease',
+        duration: 1500
+      });
+
+      const distanciaKm = (rota.summary.lengthInMeters / 1000).toFixed(2);
+      const duracaoMin = Math.round(rota.summary.travelTimeInSeconds / 60);
+
+      distanceElem.textContent = `${distanciaKm} km`;
+      durationElem.textContent = `${duracaoMin} minutos`;
+
+      routeInfo.classList.remove('hidden');
+    } else {
+      alert("Não foi possível traçar a rota.");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao buscar rota. Verifique sua conexão ou chave de API.");
   }
 }
+
 
 initializeMap();
