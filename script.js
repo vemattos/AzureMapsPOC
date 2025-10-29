@@ -106,9 +106,17 @@ async function tracarRota() {
 
       const distanciaKm = (rota.summary.lengthInMeters / 1000).toFixed(2);
       const duracaoMin = Math.round(rota.summary.travelTimeInSeconds / 60);
+      const duracaoHoras =  Math.round(duracaoMin / 60);
 
-      distanceElem.textContent = `${distanciaKm} km`;
-      durationElem.textContent = `${duracaoMin} minutos`;
+      distanceElem.textContent = `${distanciaKm}km`;
+      if (duracaoMin < 60) {
+        durationElem.textContent = `${duracaoMin}min`;
+      } else if (duracaoMin % 60 === 0) {
+        durationElem.textContent = `${duracaoHoras}hr`;
+      } else {
+        const duracaoMinRestantes = duracaoMin % 60;
+        durationElem.textContent = `${duracaoHoras}hr${duracaoMinRestantes}min`;
+      }
 
       routeInfo.classList.remove('hidden');
     } else {
