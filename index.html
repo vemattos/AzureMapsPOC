@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <title>Azure Maps POC</title>
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
 </head>
+
 <body>
   <header>
     <h1>Azure Maps POC</h1>
@@ -18,7 +20,7 @@
         <h2>Buscar endereço</h2>
         <div class="input-group">
           <input type="text" id="searchBox" placeholder="Digite um endereço">
-          <button onclick="searchAddress()">Buscar</button>
+          <button onclick="procurarEndereco()">Buscar</button>
         </div>
       </div>
 
@@ -35,9 +37,9 @@
     <section id="map-container">
       <div id="map"></div>
       <div id="route-info" class="hidden">
-    <p><strong>Distância:</strong> <span id="distance"></span></p>
-    <p><strong>Duração estimada:</strong> <span id="duration"></span></p>
-  </div>
+        <p><strong>Distância:</strong> <span id="distance"></span></p>
+        <p><strong>Duração estimada:</strong> <span id="duration"></span></p>
+      </div>
     </section>
   </main>
 
@@ -47,4 +49,5 @@
 
   <script src="script.js"></script>
 </body>
+
 </html>

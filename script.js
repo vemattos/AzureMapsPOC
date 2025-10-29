@@ -4,8 +4,8 @@ let map, datasource, routeDatasource;
 
 function initializeMap() {
   map = new atlas.Map('map', {
-    center: [-48.548, -27.595],
-    zoom: 10,
+    center: [-49.07, -26.92],
+    zoom: 12,
     authOptions: {
       authType: 'subscriptionKey',
       subscriptionKey: subscriptionKey
@@ -26,9 +26,12 @@ function initializeMap() {
   });
 }
 
-async function searchAddress() {
+async function procurarEndereco() {
   const query = document.getElementById('searchBox').value;
+  const routeInfo = document.getElementById('route-info');
   if (!query) return alert("Digite um endereço!");
+
+  routeInfo.classList.add('hidden');
 
   const response = await fetch(
     `https://atlas.microsoft.com/search/address/json?api-version=1.0&subscription-key=${subscriptionKey}&query=${encodeURIComponent(query)}`
@@ -106,7 +109,7 @@ async function tracarRota() {
 
       const distanciaKm = (rota.summary.lengthInMeters / 1000).toFixed(2);
       const duracaoMin = Math.round(rota.summary.travelTimeInSeconds / 60);
-      const duracaoHoras =  Math.round(duracaoMin / 60);
+      const duracaoHoras = Math.round(duracaoMin / 60);
 
       distanceElem.textContent = `${distanciaKm}km`;
       if (duracaoMin < 60) {
